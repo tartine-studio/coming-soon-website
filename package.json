@@ -9,6 +9,11 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^5.14.1"
+    "astro": "^5.14.1",
+    "gsap": "^3.13.0"
+  },
+  "devDependencies": {
+    "sass-embedded": "^1.93.2",
+    "sharp": "^0.34.4"
   }
 }

@@ -1,16 +1,227 @@
 ---
+import { Image } from "astro:assets";
+import "../styles/index.scss";
 
+import landingPageBackground from "../images/bread-background.jpg";
+import brandLogo from "../images/logo-text-w.svg";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta
+      name="author"
+      content="Tartine Studio <contact@tartine.studio> | Camille Briand <camille@tartine.studio> | Thibault Lepez <thibault@tartine.studio>"
+    />
+    <meta
+      name="description"
+      content="Tartine Studio, studio de développement web, bientôt disponible pour réaliser vos projets web sur mesure"
+    />
+
+    <meta
+      name="keywords"
+      content="web development, web design, digital agency, website development, custom websites, web studio, creative agency, responsive design, modern web development, web apps"
+    />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.tartine.studio" />
+    <meta property="og:title" content="Tartine Studio - Bientôt disponible" />
+    <meta
+      property="og:description"
+      content="Studio de développement web sur mesure. Bientôt disponible pour réaliser vos projets digitaux"
+    />
+    <meta property="og:image" content="/og-image.jpg" />
+    <meta property="og:locale" content="fr_FR" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://www.tartine.studio" />
+    <meta name="twitter:title" content="Tartine Studio - Bientôt disponible" />
+    <meta
+      name="twitter:description"
+      content="Studio de développement web sur mesure. Bientôt disponible pour réaliser vos projets digitaux"
+    />
+    <meta name="twitter:image" content="/og-image.jpg" />
+
+    <title>Tartine Studio</title>
+  </head>
+
+  <body>
+    <div class="loading-text"></div>
+
+    <Image
+      src={landingPageBackground}
+      class="landing-background"
+      alt="Du pain sur un torchon, prêt à être découpé en tartines"
+    />
+
+    <div class="brand-container">
+      <Image
+        id="brand"
+        src={brandLogo}
+        alt="Le logo de Tartine Studio dans un style isomorphique, avec un toast sur la gauche et le nom de l'entreprise sur la droite"
+      />
+      <p class="tagline">
+        Votre studio de développement web sur mesure
+        <br />
+        Bientôt disponible
+      </p>
+      <address>
+        <a
+          href="mailto:contact@tartine.studio"
+          title="Nous écrire"
+          target="_blank"
+        >
+          contact@tartine.studio
+        </a>
+      </address>
+    </div>
+
+    <script>
+      import { gsap } from "gsap";
+
+      const loadingTextDisplayTimeInSeconds = 3;
+      const loadingTextChangeTimeout = 800;
+      const sentences = [
+        "Préparation du grille-pain...",
+        "Découpe des tartines...",
+        "Étalage du beurre...",
+        "Ramassage des miettes",
+      ];
+      const taglineDelay = 1.5;
+      const addressDelay = 1; // Delay after tagline appears
+
+      const brandImage = document.querySelector("#brand");
+      const background = document.querySelector(".landing-background");
+      const loadingText = document.querySelector(".loading-text");
+      const tagline = document.querySelector(".tagline");
+      const address = document.querySelector("address");
+      const emailLink = document.querySelector("address a");
+
+      const originalTitle = document.title;
+      const hiddenTitle = "🍞 Préparation de la Tartine";
+
+      document.addEventListener("visibilitychange", () => {
+        document.title = document.hidden ? hiddenTitle : originalTitle;
+      });
+
+      if (background && loadingText && brandImage) {
+        let currentLoadingTextIndex = 0;
+        let isAnimating = false;
+
+        const typeText = (text: string, callback?: () => void) => {
+          const typingSpeed = 10; // The closer to 0, the fastest
+
+          let charIndex = 0;
+          const typeInterval = setInterval(() => {
+            if (charIndex < text.length) {
+              loadingText.textContent += text[charIndex];
+              charIndex++;
+            } else {
+              clearInterval(typeInterval);
+              if (callback) callback();
+            }
+          }, typingSpeed);
+        };
+
+        const deleteText = (callback?: () => void) => {
+          const deletionSpeed = 20;
+
+          const deleteInterval = setInterval(() => {
+            if (loadingText.textContent.length > 0) {
+              loadingText.textContent = loadingText.textContent.slice(0, -1);
+            } else {
+              clearInterval(deleteInterval);
+              if (callback) callback();
+            }
+          }, deletionSpeed);
+        };
+
+        const cycleLoadingText = () => {
+          if (isAnimating) return;
+          isAnimating = true;
+
+          deleteText(() => {
+            currentLoadingTextIndex =
+              (currentLoadingTextIndex + 1) % sentences.length;
+            typeText(sentences[currentLoadingTextIndex], () => {
+              isAnimating = false;
+            });
+          });
+        };
+
+        const cycleLoadingTextInterval = setInterval(
+          cycleLoadingText,
+          loadingTextChangeTimeout
+        );
+
+        gsap.to(loadingText, {
+          opacity: 0.5,
+          duration: 1,
+          repeat: -1,
+          yoyo: true,
+          ease: "power1.inOut",
+        });
+
+        background.addEventListener("load", () => {
+          gsap.delayedCall(loadingTextDisplayTimeInSeconds, () => {
+            clearInterval(cycleLoadingTextInterval);
+
+            gsap.to(loadingText, {
+              opacity: 0,
+              duration: 0.2,
+              onComplete: () => {
+                loadingText.remove();
+              },
+            });
+
+            gsap.fromTo(
+              background,
+              { opacity: 1, filter: "blur(0px)" },
+              { filter: "blur(20px)", duration: 1.5, ease: "power2.out" }
+            );
+
+            gsap.fromTo(
+              brandImage,
+              { opacity: 0 },
+              { opacity: 1, duration: 1, ease: "power2.out" }
+            );
+
+            if (tagline) {
+              gsap.delayedCall(taglineDelay, () => {
+                gsap.to(tagline, {
+                  opacity: 1,
+                  height: "auto",
+                  duration: 1.5,
+                  ease: "power2.out",
+                });
+
+                if (address && emailLink) {
+                  gsap.delayedCall(addressDelay, () => {
+                    // First make address visible
+                    gsap.to(address, {
+                      opacity: 1,
+                      duration: 1,
+                      ease: "power2.out",
+                    });
+
+                    // Then apply skew to the link
+                    gsap.to(emailLink, {
+                      skewX: -15,
+                      duration: 2.5,
+                      ease: "power2.out",
+                    });
+                  });
+                }
+              });
+            }
+          });
+        });
+      }
+    </script>
+  </body>
 </html>
