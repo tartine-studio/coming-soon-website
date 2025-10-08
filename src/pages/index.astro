@@ -4,6 +4,11 @@ import "../styles/index.scss";
 
 import landingPageBackground from "../images/bread-background.webp";
 import brandLogo from "../images/logo-text-w.svg";
+
+const opengraphTitle = "Tartine Studio - Bientôt disponible";
+const opengraphDescription =
+  "Studio de développement web sur mesure. Bientôt disponible pour réaliser vos projets digitaux";
+const opengraphUrl = "https://www.tartine.studio";
 ---
 
 <html lang="fr">
@@ -18,10 +23,7 @@ import brandLogo from "../images/logo-text-w.svg";
       name="author"
       content="Tartine Studio <contact@tartine.studio> | Camille Briand <camille@tartine.studio> | Thibault Lepez <thibault@tartine.studio>"
     />
-    <meta
-      name="description"
-      content="Tartine Studio, studio de développement web, bientôt disponible pour réaliser vos projets web sur mesure"
-    />
+    <meta name="description" content={opengraphDescription} />
 
     <meta
       name="keywords"
@@ -29,22 +31,16 @@ import brandLogo from "../images/logo-text-w.svg";
     />
 
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.tartine.studio" />
-    <meta property="og:title" content="Tartine Studio - Bientôt disponible" />
-    <meta
-      property="og:description"
-      content="Studio de développement web sur mesure. Bientôt disponible pour réaliser vos projets digitaux"
-    />
+    <meta property="og:url" content={opengraphUrl} />
+    <meta property="og:title" content={opengraphTitle} />
+    <meta property="og:description" content={opengraphDescription} />
     <meta property="og:image" content="/og-image.jpg" />
     <meta property="og:locale" content="fr_FR" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content="https://www.tartine.studio" />
-    <meta name="twitter:title" content="Tartine Studio - Bientôt disponible" />
-    <meta
-      name="twitter:description"
-      content="Studio de développement web sur mesure. Bientôt disponible pour réaliser vos projets digitaux"
-    />
+    <meta name="twitter:url" content={opengraphUrl} />
+    <meta name="twitter:title" content={opengraphTitle} />
+    <meta name="twitter:description" content={opengraphDescription} />
     <meta name="twitter:image" content="/og-image.jpg" />
 
     <title>Tartine Studio</title>
