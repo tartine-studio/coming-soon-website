@@ -84,82 +84,104 @@ import brandLogo from "../images/logo-text-w.svg";
     <script>
       import { gsap } from "gsap";
 
-      const loadingTextDisplayTimeInSeconds = 3;
-      const loadingTextChangeTimeout = 800;
+      const CONFIG = {
+        loadingDuration: 3,
+        typewriterSpeed: 10,
+        typewriterDeleteSpeed: 20,
+        cycleInterval: 800,
+        animations: {
+          taglineDelay: 1.5,
+          addressDelay: 1,
+          fadeOutDuration: 0.2,
+          blurDuration: 1.5,
+          fadeInDuration: 1,
+        },
+      };
+
       const sentences = [
         "Préparation du grille-pain...",
         "Découpe des tartines...",
         "Étalage du beurre...",
         "Ramassage des miettes",
       ];
-      const taglineDelay = 1.5;
-      const addressDelay = 1; // Delay after tagline appears
 
-      const brandImage = document.querySelector("#brand");
-      const background = document.querySelector(".landing-background");
-      const loadingText = document.querySelector(".loading-text");
-      const tagline = document.querySelector(".tagline");
-      const address = document.querySelector("address");
-      const emailLink = document.querySelector("address a");
+      const elements = {
+        brandImage: document.querySelector("#brand") as HTMLElement,
+        background: document.querySelector(
+          ".landing-background"
+        ) as HTMLImageElement,
+        loadingText: document.querySelector(".loading-text") as HTMLElement,
+        tagline: document.querySelector(".tagline") as HTMLElement,
+        address: document.querySelector("address") as HTMLElement,
+        emailLink: document.querySelector("address a") as HTMLElement,
+      };
 
-      const originalTitle = document.title;
-      const hiddenTitle = "🍞 Préparation de la Tartine";
+      const titles = {
+        original: document.title,
+        hidden: "🍞 Préparation de la Tartine",
+      };
 
       document.addEventListener("visibilitychange", () => {
-        document.title = document.hidden ? hiddenTitle : originalTitle;
+        document.title = document.hidden ? titles.hidden : titles.original;
       });
 
-      if (background && loadingText && brandImage) {
-        let currentLoadingTextIndex = 0;
+      if (elements.background && elements.loadingText && elements.brandImage) {
+        let currentSentenceIndex = 0;
         let isAnimating = false;
+        const activeIntervals = new Set<NodeJS.Timeout>();
+        let hasStartedMainAnimation = false;
 
-        const typeText = (text: string, callback?: () => void) => {
-          const typingSpeed = 10; // The closer to 0, the fastest
-
-          let charIndex = 0;
-          const typeInterval = setInterval(() => {
-            if (charIndex < text.length) {
-              loadingText.textContent += text[charIndex];
-              charIndex++;
-            } else {
-              clearInterval(typeInterval);
-              if (callback) callback();
-            }
-          }, typingSpeed);
-        };
-
-        const deleteText = (callback?: () => void) => {
-          const deletionSpeed = 20;
-
-          const deleteInterval = setInterval(() => {
-            if (loadingText.textContent.length > 0) {
-              loadingText.textContent = loadingText.textContent.slice(0, -1);
-            } else {
-              clearInterval(deleteInterval);
-              if (callback) callback();
-            }
-          }, deletionSpeed);
-        };
-
-        const cycleLoadingText = () => {
-          if (isAnimating) return;
-          isAnimating = true;
-
-          deleteText(() => {
-            currentLoadingTextIndex =
-              (currentLoadingTextIndex + 1) % sentences.length;
-            typeText(sentences[currentLoadingTextIndex], () => {
-              isAnimating = false;
-            });
+        const typeText = (text: string): Promise<void> => {
+          return new Promise((resolve) => {
+            let charIndex = 0;
+            const interval = setInterval(() => {
+              if (charIndex < text.length) {
+                elements.loadingText.textContent += text[charIndex];
+                charIndex++;
+              } else {
+                activeIntervals.delete(interval);
+                clearInterval(interval);
+                resolve();
+              }
+            }, CONFIG.typewriterSpeed);
+            activeIntervals.add(interval);
           });
         };
 
-        const cycleLoadingTextInterval = setInterval(
+        const deleteText = (): Promise<void> => {
+          return new Promise((resolve) => {
+            const interval = setInterval(() => {
+              const currentText = elements.loadingText.textContent;
+              if (currentText && currentText.length > 0) {
+                elements.loadingText.textContent = currentText.slice(0, -1);
+              } else {
+                activeIntervals.delete(interval);
+                clearInterval(interval);
+                resolve();
+              }
+            }, CONFIG.typewriterDeleteSpeed);
+            activeIntervals.add(interval);
+          });
+        };
+
+        const cycleLoadingText = async () => {
+          if (isAnimating || hasStartedMainAnimation) return;
+          isAnimating = true;
+
+          await deleteText();
+          currentSentenceIndex = (currentSentenceIndex + 1) % sentences.length;
+          await typeText(sentences[currentSentenceIndex]);
+          isAnimating = false;
+        };
+
+        typeText(sentences[0]);
+
+        const cycleInterval = setInterval(
           cycleLoadingText,
-          loadingTextChangeTimeout
+          CONFIG.cycleInterval
         );
 
-        gsap.to(loadingText, {
+        const pulseAnimation = gsap.to(elements.loadingText, {
           opacity: 0.5,
           duration: 1,
           repeat: -1,
@@ -167,60 +189,104 @@ import brandLogo from "../images/logo-text-w.svg";
           ease: "power1.inOut",
         });
 
-        background.addEventListener("load", () => {
-          gsap.delayedCall(loadingTextDisplayTimeInSeconds, () => {
-            clearInterval(cycleLoadingTextInterval);
+        const cleanupLoading = () => {
+          clearInterval(cycleInterval);
+          activeIntervals.forEach((interval) => clearInterval(interval));
+          activeIntervals.clear();
+          pulseAnimation.kill();
+          isAnimating = false;
+        };
 
-            gsap.to(loadingText, {
-              opacity: 0,
-              duration: 0.2,
-              onComplete: () => {
-                loadingText.remove();
+        const startMainAnimation = () => {
+          if (hasStartedMainAnimation) return;
+          hasStartedMainAnimation = true;
+
+          const tl = gsap.timeline();
+
+          tl.to(elements.loadingText, {
+            opacity: 0,
+            duration: CONFIG.animations.fadeOutDuration,
+            onStart: cleanupLoading,
+            onComplete: () => {
+              elements.loadingText.remove();
+            },
+          })
+            .fromTo(
+              elements.background,
+              { opacity: 1, filter: "blur(0px)" },
+              {
+                filter: "blur(20px)",
+                duration: CONFIG.animations.blurDuration,
+                ease: "power2.out",
               },
+              "<"
+            )
+            .fromTo(
+              elements.brandImage,
+              { opacity: 0 },
+              {
+                opacity: 1,
+                duration: CONFIG.animations.fadeInDuration,
+                ease: "power2.out",
+              },
+              "<0.2"
+            );
+
+          if (elements.tagline) {
+            tl.to(
+              elements.tagline,
+              {
+                opacity: 1,
+                height: "auto",
+                duration: 1.5,
+                ease: "power2.out",
+              },
+              `>+${CONFIG.animations.taglineDelay}`
+            );
+
+            if (elements.address && elements.emailLink) {
+              tl.to(
+                elements.address,
+                {
+                  opacity: 1,
+                  duration: 1,
+                  ease: "power2.out",
+                },
+                `>+${CONFIG.animations.addressDelay}`
+              ).to(
+                elements.emailLink,
+                {
+                  skewX: -15,
+                  duration: 2.5,
+                  ease: "power2.out",
+                },
+                "<"
+              );
+            }
+          }
+
+          return tl;
+        };
+
+        const checkImageAndStart = () => {
+          if (
+            elements.background.complete &&
+            elements.background.naturalHeight !== 0
+          ) {
+            gsap.delayedCall(CONFIG.loadingDuration, startMainAnimation);
+          } else {
+            elements.background.addEventListener("load", () => {
+              gsap.delayedCall(CONFIG.loadingDuration, startMainAnimation);
             });
 
-            gsap.fromTo(
-              background,
-              { opacity: 1, filter: "blur(0px)" },
-              { filter: "blur(20px)", duration: 1.5, ease: "power2.out" }
-            );
+            elements.background.addEventListener("error", () => {
+              console.error("Failed to load background image");
+              gsap.delayedCall(CONFIG.loadingDuration, startMainAnimation);
+            });
+          }
+        };
 
-            gsap.fromTo(
-              brandImage,
-              { opacity: 0 },
-              { opacity: 1, duration: 1, ease: "power2.out" }
-            );
-
-            if (tagline) {
-              gsap.delayedCall(taglineDelay, () => {
-                gsap.to(tagline, {
-                  opacity: 1,
-                  height: "auto",
-                  duration: 1.5,
-                  ease: "power2.out",
-                });
-
-                if (address && emailLink) {
-                  gsap.delayedCall(addressDelay, () => {
-                    // First make address visible
-                    gsap.to(address, {
-                      opacity: 1,
-                      duration: 1,
-                      ease: "power2.out",
-                    });
-
-                    // Then apply skew to the link
-                    gsap.to(emailLink, {
-                      skewX: -15,
-                      duration: 2.5,
-                      ease: "power2.out",
-                    });
-                  });
-                }
-              });
-            }
-          });
-        });
+        checkImageAndStart();
       }
     </script>
   </body>
