@@ -4,11 +4,17 @@ import "../styles/index.scss";
 
 import landingPageBackground from "../images/bread-background.webp";
 import brandLogo from "../images/logo-text-w.svg";
+import linkedInLogo from "../images/linkedin-logo.svg";
+import instagramLogo from "../images/instagram-logo.svg";
 
 const opengraphTitle = "Tartine Studio - Bientôt disponible";
 const opengraphDescription =
   "Studio de développement web sur mesure. Bientôt disponible pour réaliser vos projets digitaux";
 const opengraphUrl = "https://www.tartine.studio";
+
+const contactEmailAddress = "contact@tartine.studio";
+const linkedInUrl = "https://linkedin.com/company/tartinestudio";
+const instagramUrl = "https://instagram.com/tartine.studio_off";
 ---
 
 <html lang="fr">
@@ -72,10 +78,22 @@ const opengraphUrl = "https://www.tartine.studio";
           title="Nous écrire"
           target="_blank"
         >
-          contact@tartine.studio
+          {contactEmailAddress}
         </a>
       </address>
     </div>
+
+    <footer>
+      <div id="socials">
+        <a href={linkedInUrl} title="Notre page LinkedIn" target="_blank">
+          <Image id="linkedin" src={linkedInLogo} alt="LinkedIn logo" />
+        </a>
+
+        <a href={instagramUrl} title="Notre compte Instagram" target="_blank">
+          <Image id="instagram" src={instagramLogo} alt="Instagram logo" />
+        </a>
+      </div>
+    </footer>
 
     <script>
       import { gsap } from "gsap";
@@ -86,8 +104,9 @@ const opengraphUrl = "https://www.tartine.studio";
         typewriterDeleteSpeed: 22,
         cycleInterval: 800,
         animations: {
-          taglineDelay: 1.5,
-          addressDelay: 1,
+          taglineDelay: 0.5,
+          addressDelay: 0.25,
+          socialsDelay: 0.25,
           fadeOutDuration: 0.2,
           blurDuration: 1.5,
           fadeInDuration: 1,
@@ -110,6 +129,7 @@ const opengraphUrl = "https://www.tartine.studio";
         tagline: document.querySelector(".tagline") as HTMLElement,
         address: document.querySelector("address") as HTMLElement,
         emailLink: document.querySelector("address a") as HTMLElement,
+        socialsDiv: document.querySelector("#socials") as HTMLElement,
       };
 
       const titles = {

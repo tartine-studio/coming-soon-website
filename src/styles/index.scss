@@ -61,6 +61,30 @@ img {
   gap: 0;
 }
 
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding-bottom: 2rem;
+
+  & > #socials {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: baseline;
+    gap: 15vw;
+
+    & > a {
+      img {
+        $size: 2.5rem;
+        height: $size;
+        width: $size;
+      }
+    }
+  }
+}
+
 .tagline {
   color: white;
   font-size: 2rem;
