@@ -75,6 +75,8 @@ footer {
     align-items: baseline;
     gap: 15vw;
 
+    opacity: 0;
+
     & > a {
       img {
         $size: 2.5rem;

@@ -106,7 +106,7 @@ const instagramUrl = "https://instagram.com/tartine.studio_off";
         animations: {
           taglineDelay: 0.5,
           addressDelay: 0.25,
-          socialsDelay: 0.25,
+          socialsDelay: 0.75,
           fadeOutDuration: 0.2,
           blurDuration: 1.5,
           fadeInDuration: 1,
@@ -129,7 +129,7 @@ const instagramUrl = "https://instagram.com/tartine.studio_off";
         tagline: document.querySelector(".tagline") as HTMLElement,
         address: document.querySelector("address") as HTMLElement,
         emailLink: document.querySelector("address a") as HTMLElement,
-        socialsDiv: document.querySelector("#socials") as HTMLElement,
+        socials: document.querySelector("#socials") as HTMLElement,
       };
 
       const titles = {
@@ -277,6 +277,18 @@ const instagramUrl = "https://instagram.com/tartine.studio_off";
                   ease: "power2.out",
                 },
                 "<",
+              );
+            }
+
+            if (elements.socials) {
+              tl.to(
+                elements.socials,
+                {
+                  opacity: 1,
+                  duration: 1,
+                  ease: "power2.out",
+                },
+                `<${CONFIG.animations.socialsDelay}`,
               );
             }
           }
