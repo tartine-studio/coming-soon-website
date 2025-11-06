@@ -81,9 +81,9 @@ const opengraphUrl = "https://www.tartine.studio";
       import { gsap } from "gsap";
 
       const CONFIG = {
-        loadingDuration: 3,
-        typewriterSpeed: 10,
-        typewriterDeleteSpeed: 20,
+        loadingDuration: 1.75,
+        typewriterSpeed: 15,
+        typewriterDeleteSpeed: 22,
         cycleInterval: 800,
         animations: {
           taglineDelay: 1.5,
@@ -95,8 +95,8 @@ const opengraphUrl = "https://www.tartine.studio";
       };
 
       const sentences = [
-        "Préparation du grille-pain...",
         "Découpe des tartines...",
+        "Allumage du grille-pain...",
         "Étalage du beurre...",
         "Ramassage des miettes",
       ];
@@ -104,7 +104,7 @@ const opengraphUrl = "https://www.tartine.studio";
       const elements = {
         brandImage: document.querySelector("#brand") as HTMLElement,
         background: document.querySelector(
-          ".landing-background"
+          ".landing-background",
         ) as HTMLImageElement,
         loadingText: document.querySelector(".loading-text") as HTMLElement,
         tagline: document.querySelector(".tagline") as HTMLElement,
@@ -174,7 +174,7 @@ const opengraphUrl = "https://www.tartine.studio";
 
         const cycleInterval = setInterval(
           cycleLoadingText,
-          CONFIG.cycleInterval
+          CONFIG.cycleInterval,
         );
 
         const pulseAnimation = gsap.to(elements.loadingText, {
@@ -215,7 +215,7 @@ const opengraphUrl = "https://www.tartine.studio";
                 duration: CONFIG.animations.blurDuration,
                 ease: "power2.out",
               },
-              "<"
+              "<",
             )
             .fromTo(
               elements.brandImage,
@@ -225,7 +225,7 @@ const opengraphUrl = "https://www.tartine.studio";
                 duration: CONFIG.animations.fadeInDuration,
                 ease: "power2.out",
               },
-              "<0.2"
+              "<0.2",
             );
 
           if (elements.tagline) {
@@ -237,7 +237,7 @@ const opengraphUrl = "https://www.tartine.studio";
                 duration: 1.5,
                 ease: "power2.out",
               },
-              `>+${CONFIG.animations.taglineDelay}`
+              `>+${CONFIG.animations.taglineDelay}`,
             );
 
             if (elements.address && elements.emailLink) {
@@ -248,7 +248,7 @@ const opengraphUrl = "https://www.tartine.studio";
                   duration: 1,
                   ease: "power2.out",
                 },
-                `>+${CONFIG.animations.addressDelay}`
+                `>+${CONFIG.animations.addressDelay}`,
               ).to(
                 elements.emailLink,
                 {
@@ -256,7 +256,7 @@ const opengraphUrl = "https://www.tartine.studio";
                   duration: 2.5,
                   ease: "power2.out",
                 },
-                "<"
+                "<",
               );
             }
           }
