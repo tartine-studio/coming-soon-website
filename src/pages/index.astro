@@ -77,6 +77,7 @@ const instagramUrl = "https://instagram.com/tartine.studio_off";
           href="mailto:contact@tartine.studio"
           title="Nous écrire"
           target="_blank"
+          data-umami-event="email-click"
         >
           {contactEmailAddress}
         </a>
@@ -89,11 +90,23 @@ const instagramUrl = "https://instagram.com/tartine.studio_off";
 
     <footer>
       <div id="socials">
-        <a href={linkedInUrl} title="Notre page LinkedIn" target="_blank">
+        <a
+          href={linkedInUrl}
+          title="Notre page LinkedIn"
+          target="_blank"
+          data-umami-event="social-click"
+          data-umami-event-payload="linkedin"
+        >
           <Image id="linkedin" src={linkedInLogo} alt="LinkedIn logo" />
         </a>
 
-        <a href={instagramUrl} title="Notre compte Instagram" target="_blank">
+        <a
+          href={instagramUrl}
+          title="Notre compte Instagram"
+          target="_blank"
+          data-umami-event="social-click"
+          data-umami-event-payload="instagram"
+        >
           <Image id="instagram" src={instagramLogo} alt="Instagram logo" />
         </a>
       </div>
